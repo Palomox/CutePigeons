@@ -3,9 +3,12 @@
 *.js.map
 HELP.md
 target/
-!.mvn/wrapper/maven-wrapper.jar
+!.mvn/
 !**/src/main/**/target/
 !**/src/test/**/target/
+!database.mv.db
+
+
 
 ### STS ###
 .apt_generated
@@ -35,6 +38,5 @@ build/
 ### VS Code ###
 .vscode/
 /.mvn/
-/database.mv.db
-/mvnw
-/mvnw.cmd
+¡
+
