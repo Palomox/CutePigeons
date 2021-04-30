@@ -9,7 +9,7 @@ class Pigeon {
 }
 // https://www.mockable.io/a/#/space/demo4167035/rest/XpaI3GAAA
 const APIURLMOCK = "https://608be45c9f42b20017c3d13f.mockapi.io/api/v1/"
-const APIURL = "https://cutepigeons.palomox.ga/api/v1/"
+const APIURL = "http://cutepigeons.palomox.ga/api/v1/"
 document.getElementById("random").addEventListener("click", ev => {
     getRandomPigeon().then(p => {
         document.getElementById("pigeonid").textContent = "Pigeon number " + p.id.toString()
