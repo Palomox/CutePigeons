@@ -1,5 +1,5 @@
 {
-  "name": "CutePigeons frontend",
+  "name": "cutepigeons-frontend",
   "version": "1.0.0",
   "dependencies": {
     "colorette": "^1.2.2",
