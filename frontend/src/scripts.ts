@@ -9,19 +9,30 @@ class Pigeon {
 }
 // https://www.mockable.io/a/#/space/demo4167035/rest/XpaI3GAAA
 const APIURLMOCK = "https://608be45c9f42b20017c3d13f.mockapi.io/api/v1/"
-const APIURL = "http://cutepigeons.palomox.ga/api/v1/"
+const APIURL = "https://cutepigeons.palomox.ga/api/v1/"
+
+let mode = 'dark'
+document.getElementById('darkswitch').addEventListener("click", ev => {
+    if(mode == 'light') {
+        document.querySelector("html").classList.add('dark')
+        mode = 'dark'
+    }else{
+        document.querySelector("html").classList.remove('dark')
+        mode = 'light'
+    }
+})
 document.getElementById("random").addEventListener("click", ev => {
     getRandomPigeon().then(p => {
         document.getElementById("pigeonid").textContent = "Pigeon number " + p.id.toString()
         document.getElementById("pigeonimage").setAttribute("src", p.url)
     })
 })
-document.addEventListener("load", ev => {
+function onLoad(){
     getRandomPigeon().then(p => {
         document.getElementById("pigeonid").textContent = "Pigeon number " + p.id.toString()
         document.getElementById("pigeonimage").setAttribute("src", p.url)
     })
-})
+}
 
 async function getPigeonById(id: number) {
     let response = await fetch(APIURL + "getPigeonById?id=" + id,
@@ -43,7 +54,7 @@ async function getRandomPigeon() {
     return getPigeonById(r)
 }
 
-function getRandomInt(min, max) {
+function getRandomInt(min : number, max:number) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;

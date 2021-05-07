@@ -1,0 +1,41 @@
+{
+  "name": "CutePigeons frontend",
+  "version": "1.0.0",
+  "dependencies": {
+    "colorette": "^1.2.2",
+    "node": "^16.0.0",
+    "tailwindcss": "^2.1.2"
+  },
+  "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^4.0.3",
+    "@webpack-cli/generators": "^2.0.0",
+    "autoprefixer": "^10.2.5",
+    "css-loader": "^5.2.4",
+    "cssnano": "^5.0.2",
+    "cssnano-preset-default": "^5.0.1",
+    "extract-loader": "^5.1.0",
+    "file-loader": "^6.2.0",
+    "html-loader": "^2.1.2",
+    "html-webpack-plugin": "^5.3.1",
+    "mini-css-extract-plugin": "^1.6.0",
+    "postcss": "^8.2.13",
+    "postcss-cli": "^8.3.1",
+    "postcss-import": "^14.0.1",
+    "postcss-loader": "^5.2.0",
+    "style-loader": "^2.0.0",
+    "terser-webpack-plugin": "^5.1.1",
+    "ts-loader": "^9.1.1",
+    "typescript": "^4.2.4",
+    "webpack": "^5.36.2",
+    "webpack-cli": "^4.6.0",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "scripts": {
+    "build": "webpack --mode=production",
+    "build:dev": "NODE_ENV=development webpack --mode=development",
+    "build:prod": "NODE_ENV=production webpack --mode=production",
+    "watch": "webpack --watch",
+    "serve": "webpack serve"
+  },
+  "description": "CutePigeons Frontend"
+}

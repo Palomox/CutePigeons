@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CutePigeons</title>
+</head>
+
+<body onload="onLoad()" class="dark:bg-gray-800 bg-white font-sans ">
+    <div class="mr-4 mt-4 flex flex-row-reverse">
+        <label class="text-3xl">🌙</label>
+        <label class="switch">
+            <input id="darkswitch" type="checkbox" checked>
+            <span class="slider round "></span>
+        </label>
+        <label class="text-3xl">☀️</label>
+
+    </div>
+    <div class="flex flex-col items-center flex-nowrap justify-center">
+        <h1 class="text-blue-900 dark:text-blue-600 font-extrabold text-3xl">Cute Pigeons</h1>
+            <img class="max-w-[350px] mt-2 mb-2 w-full border-opacity-80 border-solid border-4 rounded-md border-gray-600 p-0.5"
+                id="pigeonimage" alt="Pigeon image"
+                src="https://i.pinimg.com/originals/0e/f9/b9/0ef9b9b86ac09b7f30de13a61ef80f0e.jpg">
+            <label class="text-white" id="pigeonid"></label>
+        <div>
+            <button class="bg-blue-500 hover:bg-blue-700 hover:border-blue-400 border-blue-200 rounded-md font-bold p-2"
+                type="submit" id="random">Get a random
+                pigeon!</button>
+            <a class="text-blue-800 hover:text-purple-600" href="https://cutepigeons.palomox.ga/api/v1">Use the
+                api!</a>
+        </div>
+    </div>
+</body>
+
+</html>
