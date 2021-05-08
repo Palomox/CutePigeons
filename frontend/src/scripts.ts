@@ -10,7 +10,7 @@ class Pigeon {
 // https://www.mockable.io/a/#/space/demo4167035/rest/XpaI3GAAA
 const APIURLMOCK = "https://608be45c9f42b20017c3d13f.mockapi.io/api/v1/"
 const APIURL = "https://cutepigeons.palomox.ga/api/v1/"
-
+let pigeons: any
 let mode = 'dark'
 document.getElementById('darkswitch').addEventListener("click", ev => {
     if(mode == 'light') {
@@ -63,11 +63,14 @@ function getRandomInt(min : number, max:number) {
  * Returns the JSON of all the pigeons
  */
 async function getPigeonsJson(){
-    let response = await fetch(APIURL+"getPigeons", {
-        method: "GET",
-        mode: "cors"
-    })
-    let json = await response.json()
-    console.log(json.pigeons.length)
-    return json
+    if(pigeons == null) {
+        let response = await fetch(APIURL + "getPigeons", {
+            method: "GET",
+            mode: "cors"
+        })
+        let json = await response.json()
+        console.log(json.pigeons.length)
+        pigeons = json;
+    }
+    return pigeons
 }
