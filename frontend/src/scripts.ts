@@ -22,11 +22,31 @@ document.getElementById('darkswitch').addEventListener("click", ev => {
     }
 })
 document.getElementById("random").addEventListener("click", ev => {
+    setRandomPigeon()
+})
+window.addEventListener("load", ev => {
+    let urlParams = new URLSearchParams(window.location.search)
+    if (urlParams.has("id")){
+        setPigeon(urlParams.get("id"))
+    }
+})
+window.addEventListener("keypress", ev => {
+    if(ev.key == "Enter"){
+        setRandomPigeon()
+    }
+})
+async function setPigeon(id : string){
+    let pigeon = await getPigeonById(id)
+    document.getElementById("pigeonid").textContent = "Pigeon number " + pigeon.id.toString()
+    document.getElementById("pigeonimage").setAttribute("src", pigeon.url)
+
+}
+function setRandomPigeon(){
     getRandomPigeon().then(p => {
         document.getElementById("pigeonid").textContent = "Pigeon number " + p.id.toString()
         document.getElementById("pigeonimage").setAttribute("src", p.url)
     })
-})
+}
 function onLoad(){
     getRandomPigeon().then(p => {
         document.getElementById("pigeonid").textContent = "Pigeon number " + p.id.toString()
@@ -34,24 +54,17 @@ function onLoad(){
     })
 }
 
-async function getPigeonById(id: number) {
-    let response = await fetch(APIURL + "getPigeonById?id=" + id,
-        {
-            method: "GET",
-            mode: "cors"
-        })
-    let responseJson = await response.json()
-    let pigeonId = responseJson.id
-    let pigeonUrl = responseJson.url
-    return new Pigeon(pigeonId, pigeonUrl)
+async function getPigeonById(id: string) : Promise<Pigeon>{
+    let pigeonsJson = await getPigeonsJson()
+    return pigeonsJson.pigeons[id]
 }
 async function getPigeonsCount(){
     let json = await getPigeonsJson();
     return await json.pigeons.length
 }
-async function getRandomPigeon() {
-    var r = getRandomInt(1, await getPigeonsCount())
-    return getPigeonById(r)
+async function getRandomPigeon() : Promise<Pigeon>{
+    let r = getRandomInt(1, await getPigeonsCount())
+    return getPigeonById(r.toString())
 }
 
 function getRandomInt(min : number, max:number) {
