@@ -59,6 +59,22 @@
   .slider.round:before {
     border-radius: 50%;
   }
+  /*
+  * Things you can use popup
+  */
+  .popup{
+    visibility: visible;
+    @apply bg-blue-700;
+    animation-fill-mode: forwards; 
+  }
+  @keyframes popupVanish {
+    from {
+      opacity: 1;}
+    to {
+    opacity: 0;
+  visibility: hidden;}
+  }
+
 #pigeonimage{
     height: 50%;
     width: 50%;

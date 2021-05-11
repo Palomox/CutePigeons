@@ -35,6 +35,12 @@ window.addEventListener("keypress", ev => {
         setRandomPigeon()
     }
 })
+document.getElementById("initialpopup__dimiss").addEventListener("click", ev => {
+    dismissPopup("initialpopup")
+})
+function dismissPopup(id : string){
+    document.getElementById(id).style.animation = "popupVanish 1s forwards";
+}
 async function setPigeon(id : string){
     let pigeon = await getPigeonById(id)
     document.getElementById("pigeonid").textContent = "Pigeon number " + pigeon.id.toString()
