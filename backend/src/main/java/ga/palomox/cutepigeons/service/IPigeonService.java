@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import ga.palomox.cutepigeons.model.Pigeon;
+import ga.palomox.cutepigeons.repository.IPigeonRepository;
 
 @Service
 public interface IPigeonService {
@@ -13,4 +14,6 @@ public interface IPigeonService {
 	List<Pigeon> getPigeons();
 	Pigeon addPigeon(Pigeon pigeon);
 	List<Pigeon> addPigeons(Pigeon...pigeons);
+	void removePigeon(int id);
+	IPigeonRepository getPigeonRepo();
 }

@@ -37,4 +37,14 @@ public class PigeonServiceImpl implements IPigeonService {
 		
 	}
 
+	@Override
+	public void removePigeon(int id) {
+		pigeonRepo.deleteById(id);
+	}
+
+	@Override
+	public IPigeonRepository getPigeonRepo() {
+		return pigeonRepo;
+	}
+
 }

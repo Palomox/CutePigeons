@@ -75,7 +75,7 @@ function onLoad(){
 }
 
 async function getPigeonById(id: string) : Promise<Pigeon>{
-    let pigeon = await fetch(APIURL+"getPigeonById?id="+id, {
+    let pigeon = await fetch(APIURL+"public/getPigeonById?id="+id, {
         method: "GET",
         mode: "cors"
     })
@@ -104,7 +104,7 @@ function getRandomInt(min : number, max:number) {
  */
 async function getPigeonsJson() {
     if(pigeons == null) {
-        let response = await fetch(APIURL + "getPigeons", {
+        let response = await fetch(APIURL + "public/getPigeons", {
             method: "GET",
             mode: "cors"
         })

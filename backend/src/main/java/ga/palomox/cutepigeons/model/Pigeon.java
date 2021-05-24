@@ -11,7 +11,6 @@ import javax.persistence.Table;
 public class Pigeon {
 	@Column(name = "id")
 	@Id
-	@GeneratedValue
 	private int id;
 	@Column(name = "url")
 	private String url;
