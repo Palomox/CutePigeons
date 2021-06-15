@@ -1,7 +1,6 @@
 export
 node_modules
-**/*.js
 package-lock.json
 /dist/
-/src/*.js
+/src/**.js
 /src/*.js.map

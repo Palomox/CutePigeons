@@ -41,9 +41,9 @@ var Pigeon = /** @class */ (function () {
     }
     return Pigeon;
 }());
-// https://www.mockable.io/a/#/space/demo4167035/rest/XpaI3GAAA
 var APIURLMOCK = "https://608be45c9f42b20017c3d13f.mockapi.io/api/v1/";
 var APIURL = "https://cutepigeons.palomox.ga/api/v1/";
+var pigeons;
 var mode = 'dark';
 document.getElementById('darkswitch').addEventListener("click", function (ev) {
     if (mode == 'light') {
@@ -56,11 +56,64 @@ document.getElementById('darkswitch').addEventListener("click", function (ev) {
     }
 });
 document.getElementById("random").addEventListener("click", function (ev) {
+    setRandomPigeon();
+});
+window.addEventListener("load", function (ev) {
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has("id")) {
+        setPigeon(urlParams.get("id"));
+    }
+    else {
+        setRandomPigeon();
+    }
+});
+window.addEventListener("keypress", function (ev) {
+    if (ev.key == "Enter") {
+        setRandomPigeon();
+    }
+});
+document.getElementById("initialpopup__dimiss").addEventListener("click", function (ev) {
+    dismissPopup("initialpopup");
+});
+function dismissPopup(id) {
+    document.getElementById(id).style.animation = "popupVanish 1s forwards";
+    //DEBUG
+    //document.getElementById(id).remove()
+}
+function setPigeon(id) {
+    return __awaiter(this, void 0, void 0, function () {
+        var pigeon;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, getPigeonById(id)];
+                case 1:
+                    pigeon = _a.sent();
+                    if (pigeon == null) {
+                        document.getElementById("pigeonid").textContent = "Couldn't find pigeon number " + id;
+                        document.getElementById("initialpopup").style.top = "50%";
+                        document.getElementById("initialpopup").style.visibility = "visible";
+                        document.getElementById("initialpopup").style.backgroundColor = "#ff0000";
+                        document.getElementById("initialpopup__text").textContent = "Pigeon not found";
+                        document.getElementById("pigeonid").style.fontSize = "50";
+                        document.getElementById("pigeonimage").style.visibility = "hidden";
+                        return [2 /*return*/];
+                    }
+                    else {
+                        document.getElementById("pigeonid").textContent = "Pigeon number " + pigeon.id.toString();
+                        document.getElementById("pigeonimage").setAttribute("src", pigeon.url);
+                    }
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+function setRandomPigeon() {
     getRandomPigeon().then(function (p) {
         document.getElementById("pigeonid").textContent = "Pigeon number " + p.id.toString();
         document.getElementById("pigeonimage").setAttribute("src", p.url);
+        document.getElementById("pigeonimage").style.visibility = "visible";
     });
-});
+}
 function onLoad() {
     getRandomPigeon().then(function (p) {
         document.getElementById("pigeonid").textContent = "Pigeon number " + p.id.toString();
@@ -69,21 +122,22 @@ function onLoad() {
 }
 function getPigeonById(id) {
     return __awaiter(this, void 0, void 0, function () {
-        var response, responseJson, pigeonId, pigeonUrl;
+        var pigeon;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, fetch(APIURL + "getPigeonById?id=" + id, {
+                case 0: return [4 /*yield*/, fetch(APIURL + "public/getPigeonById?id=" + id, {
                         method: "GET",
                         mode: "cors"
                     })];
                 case 1:
-                    response = _a.sent();
-                    return [4 /*yield*/, response.json()];
-                case 2:
-                    responseJson = _a.sent();
-                    pigeonId = responseJson.id;
-                    pigeonUrl = responseJson.url;
-                    return [2 /*return*/, new Pigeon(pigeonId, pigeonUrl)];
+                    pigeon = _a.sent();
+                    if (!pigeon.ok) {
+                        return [2 /*return*/, null];
+                    }
+                    else {
+                        return [2 /*return*/, pigeon.json()];
+                    }
+                    return [2 /*return*/];
             }
         });
     });
@@ -113,7 +167,7 @@ function getRandomPigeon() {
                     return [4 /*yield*/, getPigeonsCount()];
                 case 1:
                     r = _a.apply(void 0, _b.concat([_c.sent()]));
-                    return [2 /*return*/, getPigeonById(r)];
+                    return [2 /*return*/, getPigeonById(r.toString())];
             }
         });
     });
@@ -131,17 +185,21 @@ function getPigeonsJson() {
         var response, json;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, fetch(APIURL + "getPigeons", {
-                        method: "GET",
-                        mode: "cors"
-                    })];
+                case 0:
+                    if (!(pigeons == null)) return [3 /*break*/, 3];
+                    return [4 /*yield*/, fetch(APIURL + "public/getPigeons", {
+                            method: "GET",
+                            mode: "cors"
+                        })];
                 case 1:
                     response = _a.sent();
                     return [4 /*yield*/, response.json()];
                 case 2:
                     json = _a.sent();
                     console.log(json.pigeons.length);
-                    return [2 /*return*/, json];
+                    pigeons = json;
+                    _a.label = 3;
+                case 3: return [2 /*return*/, pigeons];
             }
         });
     });
