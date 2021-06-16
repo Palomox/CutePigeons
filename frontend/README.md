@@ -1,15 +1,19 @@
-# CUTEPIGEONS FRONTEND
-Frontend of [CutePigeons](https://cutepigeons.palomox.ga)
-This project has been created using **webpack**, you can now run
+# frontend
 
+## Project setup
+```
+npm install
+```
+
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
+
+### Compiles and minifies for production
 ```
 npm run build
 ```
 
-or
-
-```
-yarn build
-```
-
-to bundle your application.
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
