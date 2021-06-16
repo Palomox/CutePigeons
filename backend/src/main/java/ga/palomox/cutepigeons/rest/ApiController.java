@@ -136,7 +136,7 @@ public class ApiController{
 		}
 		int id = Integer.valueOf(String.valueOf(body.get("id")));
 		if(pigeonService.getPigeonById(id).isEmpty()) {
-			return ResponseEntity.badRequest().body("{\"error\": \"Can't find pigeon with id '"+id+"'\"}");
+			return ResponseEntity.badRequest().body("{\"status\": \"Error\", \"error\": \"Can't find pigeon with id '"+id+"'\"}");
 		}
 		pigeonService.removePigeon(id);
 		return ResponseEntity.ok("{\"status\": \"Success\", \"id\":"+id+"}");
