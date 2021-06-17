@@ -85,7 +85,7 @@ export default class Admin extends Vue{
   }
   login(){
     this.$auth.auth0Client.loginWithRedirect({
-      redirectUri: 'https://localhost:8080/admin'
+      redirectUri: window.history.back()
     })
     console.info(this.$auth)
   }
@@ -153,7 +153,7 @@ export default class Admin extends Vue{
   logout(){
     console.info(this.$auth)
     this.$auth.auth0Client.logout({
-      returnTo: 'https://localhost:8080/admin'
+      returnTo: window.location.origin
     })
   }
 }
