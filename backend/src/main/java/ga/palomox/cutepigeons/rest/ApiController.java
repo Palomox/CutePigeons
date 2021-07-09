@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.websocket.server.PathParam;
-
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
@@ -20,14 +18,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ga.palomox.cutepigeons.model.Pigeon;
@@ -94,6 +93,12 @@ public class ApiController{
 	}
 	@PostMapping("/admin/addPigeon")
 	public ResponseEntity<?> addPigeon(RequestEntity<String> request){
+		Authentication user = SecurityContextHolder.getContext().getAuthentication();
+		Jwt userPrincipal = (Jwt) user.getPrincipal();
+		System.out.println(userPrincipal.getClaimAsStringList("permissions"));
+		if(!userPrincipal.getClaimAsStringList("permissions").contains("write:pigeons")) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{\"status\": \"Error\", \"error\": \"Forbidden\"}");
+		}
 		if(!request.hasBody()) {
 			return ResponseEntity.badRequest().body("{\"error\": \"You have to add a body specifying the pigeon to add\"}");
 		}

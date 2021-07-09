@@ -1,5 +1,5 @@
 <template>
-<div class="flex flex-col">
+<div v-if="!error" class="flex flex-col">
   <img class="self-center w-1/3 h-auto border-gray-500 border-solid border border-4 rounded-md p-1" :src="pigeon.url">
   <span class="self-center">Pigeon number {{pigeon.id}}.</span>
   <div class="self-center">
@@ -7,11 +7,15 @@
     <a class="ml-1 text-blue-700 hover:text-purple-700" href="https://cutepigeons.palomox.ga/api/v1">Use the API</a>
   </div>
 </div>
+  <div v-if="error" class="flex flex-col">
+    <popup class="self-center" msg="Pigeon not found" bgColor="red"/>
+  </div>
 </template>
 
 <script lang="ts">
 import {Options, Vue} from "vue-class-component";
 import {Pigeon} from "../Types";
+import Popup from "@/components/Popup.vue";
 
 @Options({
   name: "pigeon-shower",
@@ -19,12 +23,16 @@ import {Pigeon} from "../Types";
     pigeon: Object,
     pigeonId: Number
   },
+  components: {
+    Popup
+  }
 })
 export default class PigeonShower extends Vue{
   pigeon: Pigeon = {
     id: 0,
     url: ''
   }
+  error = true
   pigeonId ?:number
   mounted(){
     window.addEventListener('keydown', ev => {
@@ -44,6 +52,11 @@ export default class PigeonShower extends Vue{
       mode: "cors",
       method: "GET"
     })
+    if(!data.ok){
+      this.error = true
+      return
+    }
+    this.error = false
     const responseBody = await data.json()
     const pigeonsLength = responseBody.pigeons.length
 
@@ -59,6 +72,11 @@ export default class PigeonShower extends Vue{
       mode: "cors",
       method: "GET"
     })
+    if(!data.ok){
+      this.error = true;
+      return
+    }
+    this.error = false;
     const responseBody = await data.json()
 
     const chosenPigeon = responseBody
