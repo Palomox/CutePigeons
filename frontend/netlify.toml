@@ -1,7 +1,7 @@
 # A redirect rule with many of the supported properties
 [[redirects]]
 from = "/api/*"
-to = "https://server2.palomox.ga/api/:splat"
+to = "https://server2.palomox.ga:5555/api/:splat"
 
 # The default HTTP status code is 301, but you can define a different one.
 status = 200
