@@ -15,7 +15,7 @@
     ],
     "redirects": [
       {
-        "source": "/api/:endpoint",
+        "source": "/api/:endpoint*",
         "destination": "https://server2.palomox.ga:5555/api/:endpoint",
         "type": 301
       }
