@@ -41,3 +41,6 @@ build/
 /.mvn/
 ¡
 
+
+# Local Netlify folder
+.netlify

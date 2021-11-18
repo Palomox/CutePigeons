@@ -7,7 +7,7 @@
       <!-- show logout when authenticated -->
       <button class="self-end" v-if="this.$auth.isAuthenticated" @click="logout">Log out</button>
     </div>
-    <div class="flex flex-row gap-x-4 justify-center" v-if="this.$auth.isAuthenticated">
+    <div class="flex flex-row gap-x-4 justify-center" v-if="this.$auth.isAuthenticated && this.mayAdministrate">
       <form class="self-center flex flex-col w-1/3 border border-gray-500 font-bold rounded-md border-4 p-1" @submit.prevent="addPigeon">
         <label class="self-center text-xl">New Pigeon</label>
         <label>Pigeon url</label>
@@ -37,6 +37,7 @@
         </div>
       </form>
     </div>
+    <button @click="mayAdministrate()">test</button>
     </div>
 </template>
 <script lang="ts">
@@ -68,6 +69,13 @@ export default class Admin extends Vue{
   pigeonAdded : any = {
     url: ""
   }
+  mayAdministrate(){
+    let token = this.$auth.auth0Client.getTokenSilently({
+      scope: "write:pigeons"
+    })
+
+    return true
+  }
   resetAdding(){
     this.successAdding = false
     this.errorAdding = {
@@ -91,7 +99,9 @@ export default class Admin extends Vue{
   }
   api = "https://cutepigeons.palomox.ga/api/v1/admin/"
   async addPigeon(){
-    const token = await this.$auth.auth0Client.getTokenSilently()
+    const token = await this.$auth.auth0Client.getTokenSilently({
+      scope: "write:pigeons"
+    })
 
 
     const response = await fetch(this.api+"addPigeon", {
