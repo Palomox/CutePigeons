@@ -13,6 +13,8 @@
 <script lang="ts">
 import {Options, Vue} from "vue-class-component";
 import ModeToggle from '@/components/ModeToggle.vue'
+import {Configuration, V0alpha2Api} from "@ory/kratos-client";
+import {inject} from "vue";
 
 @Options({
   components: {
@@ -20,6 +22,11 @@ import ModeToggle from '@/components/ModeToggle.vue'
   }
 })
 export default class App extends Vue{
+  $kratos ?: V0alpha2Api;
+
+  beforeCreate(){
+    this.$kratos = inject('$kratos')
+  }
   created(){
     document.documentElement.classList.add('dark')
     document.documentElement.classList.add('bg-gray-800')

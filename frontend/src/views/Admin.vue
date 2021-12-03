@@ -43,12 +43,20 @@
 <script lang="ts">
 import {Options, Vue} from "vue-class-component";
 import {inject} from "vue";
+import {V0alpha2Api} from "@ory/kratos-client";
 
 @Options({
   name: 'admin',
 })
 export default class Admin extends Vue{
   $auth : any;
+  $kratos ?: V0alpha2Api;
+
+  beforeCreate(){
+    this.$kratos = inject('$kratos')
+    this.$auth = inject('$auth')
+  }
+
   successAdding = false
   successRemoving = false
   errorAdding : any = {
@@ -60,9 +68,6 @@ export default class Admin extends Vue{
     code: ""
   }
   pigeonAddedId ?: number = 0
-  beforeCreate(){
-    this.$auth = inject('$auth')
-  }
   pigeonDeleted : any = {
     id: undefined
   }
@@ -92,10 +97,13 @@ export default class Admin extends Vue{
     }
   }
   login(){
+    /*
     this.$auth.auth0Client.loginWithRedirect({
       redirectUri: window.history.back()
     })
     console.info(this.$auth)
+    */
+
   }
   api = "https://cutepigeons.palomox.ga/api/v1/admin/"
   async addPigeon(){
