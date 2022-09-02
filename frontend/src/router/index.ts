@@ -12,12 +12,6 @@ const routes: Array<RouteRecordRaw> = [
     props: route => ({pigeonId: route.query.id})
   },
   {
-    path: '/login',
-    name: 'Login',
-    component: Login,
-    props: route => ({flow: route.query.flow})
-  },
-  {
     path: '/admin',
     name: 'Admin',
     component: Admin,
