@@ -1,26 +1,0 @@
-server:
-  port: 5555
-debug: true
-logging:  level:    root: DEBUG
-auth0:
-  audience: https://cutepigeons.palomox.ga/api/v1
-ory:
-  kratos:
-    baseUrl: http://localhost:4000
-  keto: 
-    baseUrl: https://romantic-satoshi-kojdtfzsl2.projects.oryapis.com
-spring:
-  datasource:
-    driverClassName: org.postgresql.Driver
-    password: ${DB_PASSWORD}
-    url: ${DB_URL}
-    username: ${DB_USER}
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: update
-  security:
-    oauth2:
-        resourceserver:
-            jwt:
-                issuer-uri: https://palomox-testing.eu.auth0.com/

@@ -2,3 +2,7 @@
 /database.mv.db
 /mvnw
 /mvnw.cmd
+/.gradle/
+/test.properties
+/bin/
+/build/

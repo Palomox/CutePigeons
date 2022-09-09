@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<migration xmlns="http://ebean-orm.github.io/xml/ns/dbmigration">
+    <changeSet type="apply">
+        <createTable name="pigeons" pkName="pk_pigeons">
+            <column name="id" type="integer" primaryKey="true"/>
+            <column name="url" type="varchar"/>
+            <column name="allowed" type="boolean" defaultValue="false" notnull="true"/>
+            <column name="cutepigeons_user_uuid" type="uuid" references="cutepigeons_users.uuid" foreignKeyName="fk_pigeons_cutepigeons_user_uuid" foreignKeyIndex="ix_pigeons_cutepigeons_user_uuid"/>
+        </createTable>
+        <createTable name="cutepigeons_users" identityType="external" pkName="pk_cutepigeons_users">
+            <column name="uuid" type="uuid" primaryKey="true" identity="true"/>
+            <column name="display_name" type="varchar"/>
+        </createTable>
+    </changeSet>
+</migration>
