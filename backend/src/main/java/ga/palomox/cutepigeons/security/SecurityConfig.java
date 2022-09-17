@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
@@ -14,25 +15,33 @@ import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 
+import sh.ory.ApiClient;
+import sh.ory.api.V0alpha2Api;
+
 @Configuration
-@EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter{
+public class SecurityConfig{
 	
-	@Override
+	
+	
+/*@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-		.mvcMatchers("/api/v1/authenticated/userDetails").authenticated()
+		/*.mvcMatchers("/api/v1/authenticated/userDetails").authenticated()
 		.mvcMatchers("/api/v1/public").permitAll()
 		.mvcMatchers("/api/v1/admin").hasAuthority("SCOPE_write:pigeons")
 		.and().cors()
 		.and().oauth2ResourceServer().jwt();
-	}
+		.anyRequest().permitAll().and().cors();
+	}*/
 
     @Value("${auth0.audience}")
     private String audience;
 
     @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private String issuer;
+    
+    @Value("${ory.kratos.baseUrl}")
+    private String oryBaseurl;
 
     @Bean
     JwtDecoder jwtDecoder() {
@@ -46,5 +55,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         jwtDecoder.setJwtValidator(withAudience);
 
         return jwtDecoder;
+    }
+    
+    @Bean
+    V0alpha2Api oryApi() {
+    	V0alpha2Api api = new V0alpha2Api(new ApiClient().setBasePath(this.oryBaseurl));
+    	return api;
     }
 }

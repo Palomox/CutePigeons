@@ -1,18 +1,9 @@
-const  colors = require('tailwindcss/colors')
-
+const colors = require('./colors')
 module.exports = {
-    mode: "jit",
-    purge: {
-        enabled: true,
-        preserveHtmlElements: true,
-        content: [
-            './**.html',
-            './**.ts',
-            './**.vue'
-
-        ],
-    },
-    darkMode: 'class', // or 'media' or 'class'
+    content: [
+            './src/**/*.{html,ts,vue}'
+    ],
+    //darkMode: 'class', // or 'media' or 'class'
     theme: {
         screens: {
             sm: '640px',
@@ -27,14 +18,15 @@ module.exports = {
 
             black: colors.black,
             white: colors.white,
-            gray: colors.coolGray,
+            gray: colors.gray,
             red: colors.red,
             yellow: colors.amber,
             green: colors.emerald,
-            blue: colors.blue,
+            blue: colors.lightBlue,
             indigo: colors.indigo,
             purple: colors.violet,
             pink: colors.pink,
+            teal: colors.teal
         },
         spacing: {
             px: '1px',
@@ -166,11 +158,11 @@ module.exports = {
         },
         boxShadow: {
             sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-            DEFAULT: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-            md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-            lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-            xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-            '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            DEFAULT: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.10)',
+            md: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+            lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.30)',
+            xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.40)',
+            '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.80)',
             inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
             none: 'none',
         },
@@ -968,9 +960,6 @@ module.exports = {
         width: ['responsive'],
         wordBreak: ['responsive'],
         zIndex: ['responsive', 'focus-within', 'focus'],
-    },
-    variants: {
-        extend: {},
     },
     plugins: [],
 }

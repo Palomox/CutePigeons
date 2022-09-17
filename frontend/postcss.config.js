@@ -3,12 +3,12 @@ module.exports = {
         require('postcss-import'),
         require('tailwindcss'),
         require('autoprefixer'),
-        require('cssnano')({
+        /*require('cssnano')({
             preset: ['default', {
                 discardComments: {
                     removeAll: true,
                 },
             }],
-        }),
+        }),*/
     ]
 };

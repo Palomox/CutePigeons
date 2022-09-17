@@ -2,7 +2,7 @@ package ga.palomox.cutepigeons.rest;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
+import org.hibernate.secure.spi.PermissionCheckEntityInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.CacheControl;
@@ -30,12 +31,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ga.palomox.cutepigeons.model.Pigeon;
+import ga.palomox.cutepigeons.service.IPermCheck;
 import ga.palomox.cutepigeons.service.IPigeonService;
+import sh.ory.api.V0alpha2Api;
 
 @RestController
 @RequestMapping(path = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
-@CrossOrigin(origins = "*")
 public class ApiController{
+	@Autowired
+	private V0alpha2Api oryApi;
+	
+	@Autowired
+	private IPermCheck permissionsCheck;
 	
 	@Autowired
 	private IPigeonService pigeonService;
@@ -48,11 +55,17 @@ public class ApiController{
 			return ResponseEntity.badRequest().body(String.format("{\"status\": \"error\", \"error\": \"Pigeon %s doesn't exist!\"}", id));
 		}
 		HttpHeaders headers = new HttpHeaders();
-	    InputStream in;
+	    String contentType;
 	    byte[] media;
+	    
 		try {
-			in = new URL(pigeon.get().getUrl()).openStream();
-		    media = IOUtils.toByteArray(in);
+			URL url = new URL(pigeon.get().getUrl());
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("HEAD");
+			HttpURLConnection.setFollowRedirects(true);
+			connection.connect();
+			contentType = connection.getContentType();
+		    media = IOUtils.toByteArray(connection.getInputStream());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().build();
@@ -60,18 +73,7 @@ public class ApiController{
 			e.printStackTrace();
 			return ResponseEntity.badRequest().build();
 		}
-		String extension = pigeon.get().getUrl().substring(pigeon.get().getUrl().length()-3, pigeon.get().getUrl().length());
-		switch(extension) {
-		case "png":
-			headers.setContentType(MediaType.IMAGE_PNG);
-			break;
-		case "jpg":
-			headers.setContentType(MediaType.IMAGE_JPEG);
-			break;
-		default:
-			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-			break;
-		}
+		headers.setContentType(MediaType.valueOf(contentType));
 	    headers.setCacheControl(CacheControl.noCache().getHeaderValue());
 	    ResponseEntity<byte[]> responseEntity = new ResponseEntity<>(media, headers, HttpStatus.OK);
 	    return responseEntity;
@@ -93,10 +95,7 @@ public class ApiController{
 	}
 	@PostMapping("/admin/addPigeon")
 	public ResponseEntity<?> addPigeon(RequestEntity<String> request){
-		Authentication user = SecurityContextHolder.getContext().getAuthentication();
-		Jwt userPrincipal = (Jwt) user.getPrincipal();
-		System.out.println(userPrincipal.getClaimAsStringList("permissions"));
-		if(!userPrincipal.getClaimAsStringList("permissions").contains("write:pigeons")) {
+		if(!permissionsCheck.hasPerm(request, "writer", "pigeons", "*")) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{\"status\": \"Error\", \"error\": \"Forbidden\"}");
 		}
 		if(!request.hasBody()) {
@@ -121,16 +120,22 @@ public class ApiController{
 			return ResponseEntity.badRequest().body("{\"status\": \"Error\", \"error\": \"Pigeon already exists\"}");
 		}
 		Pigeon returned = pigeonService.addPigeon(pigeonToAdd);
-		return ResponseEntity.ok("{\"status\": \"Success\", \"id\":"+returned.getId()+"}");
+		return ResponseEntity.ok().body("{\"status\": \"Success\", \"id\":"+returned.getId()+"}");
 	}
 	@GetMapping("/authenticated/userDetails")
-	public ResponseEntity<?> getUserDetails(){
-		//Check userDetails endpoint not working
-		System.out.println(SecurityContextHolder.getContext().getAuthentication());
-		return ResponseEntity.ok(SecurityContextHolder.getContext().getAuthentication());
+	public ResponseEntity<?> getUserDetails(RequestEntity<?> request){
+		if(permissionsCheck.isAuthenticated(request)) {
+			return ResponseEntity.ok()
+					.body("nil");
+		}
+
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{\"status\": \"Error\", \"error\": \"Forbidden\"}");
 	}
 	@DeleteMapping("/admin/deletePigeon")
 	public ResponseEntity<?> removePigeon(RequestEntity<String> request){
+		if(!permissionsCheck.isAuthenticated(request)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{\"status\": \"Error\", \"error\": \"Forbidden\"}");
+		}
 		if(!request.hasBody()) {
 			return ResponseEntity.badRequest().body("{\"error\": \"You have to add a body specifying the pigeon to delete\"}");
 		}
@@ -140,11 +145,15 @@ public class ApiController{
 			return ResponseEntity.badRequest().body("{\"error\": \"You have to send a pigeon id to delete\"}");
 		}
 		int id = Integer.valueOf(String.valueOf(body.get("id")));
+		if(!permissionsCheck.hasPerm(request, "writer", "pigeons", Integer.toString(id))) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{\"status\": \"Error\", \"error\": \"Forbidden\"}");
+		}
+
 		if(pigeonService.getPigeonById(id).isEmpty()) {
 			return ResponseEntity.badRequest().body("{\"status\": \"Error\", \"error\": \"Can't find pigeon with id '"+id+"'\"}");
 		}
 		pigeonService.removePigeon(id);
-		return ResponseEntity.ok("{\"status\": \"Success\", \"id\":"+id+"}");
+		return ResponseEntity.ok().body("{\"status\": \"Success\", \"id\":"+id+"}");
 	}
 	
 }

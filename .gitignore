@@ -1,5 +1,4 @@
-/frontend/tsconfig.json
-*.js
+﻿*.js
 *.js.map
 HELP.md
 target/
