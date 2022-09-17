@@ -1,0 +1,23 @@
+{
+  "hosting": {
+    "public": "dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "redirects": [
+      {
+        "source": "/api/:endpoint*",
+        "destination": "https://server2.palomox.ga:5555/api/:endpoint",
+        "type": 301
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "**/!(api)",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

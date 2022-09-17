@@ -1,0 +1,30 @@
+# A redirect rule with many of the supported properties
+[[redirects]]
+from = "/api/*"
+to = "https://server2.palomox.ga:5555/api/:splat"
+
+# The default HTTP status code is 301, but you can define a different one.
+status = 200
+
+# By default, redirects won’t be applied if there’s a file with the same
+# path as the one defined in the `from` property. Setting `force` to `true`
+# will make the redirect rule take precedence over any existing files.
+force = true
+
+[[redirects]]
+from = "/*"
+to = "index.html"
+status = 200
+force = false
+
+# Redirect from /old-path?id=123 to /new-path. Each combination of query
+# params needs to be defined in a separate [[redirects]] block.
+# More information at https://docs.netlify.com/routing/redirects/redirect-options/#query-parameters
+# query = {id = ":id"}
+
+# Redirect based on browser language and geolocation.
+
+
+# You can also define custom headers within your redirects blocks.
+[redirects.headers]
+X-From = "Netlify"

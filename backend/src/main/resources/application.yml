@@ -1,0 +1,19 @@
+server:
+  port: 5555
+auth0:
+  audience: https://cutepigeons.palomox.ga/api/v1
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
+    username: ${DB_USER}
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+  security:
+    oauth2:
+        resourceserver:
+            jwt:
+                issuer-uri: https://palomox-testing.eu.auth0.com/
