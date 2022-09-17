@@ -1,97 +1,76 @@
 <template>
-<div v-if="!error" class="flex flex-col">
-  <img class="self-center w-1/3 h-auto border-gray-500 border-solid border border-4 rounded-md p-1" :src="pigeon.url">
-  <span class="self-center">Pigeon number {{pigeon.id}}.</span>
-  <div class="self-center">
-    <button class="bg-blue-500 rounded-md p-1" @click="swapPigeon">Get pigeon!</button>
-    <a class="ml-1 text-blue-700 hover:text-purple-700" href="https://cutepigeons.palomox.ga/api/v1">Use the API</a>
-  </div>
-</div>
-  <div v-if="error" class="flex flex-col">
-    <popup class="self-center" msg="Pigeon not found" bgColor="red"/>
+  <div class="flex flex-col bg-gray-700 max-w-[33%] p-3 rounded-md shadow-md">
+    <div class="flex flex-row">
+      <div>
+        <h2 @contextmenu.prevent.stop @mousedown.prevent="handleContextMenu"  class="text-3xl text-purple-500 font-semibold cursor-default">{{ props.post.title }}</h2>
+        <context-menu v-if="editable" :type="getContextMenu" :open="showDelete" @mod-action="(allow) => modAction(allow)" @delete="deletePost" />
+        <h3 class="text-pink-200 mb-1">{{ getAuthor }}</h3>
+      </div>
+      <div v-if="type == 'user'" class="ml-auto">
+        <likes :likes="props.post.likes" :liked="props.post.liked" @do-like="doLike"/>
+      </div>
+    </div>
+    <img class="self-center h-auto rounded-md" :src="props.post.url">
   </div>
 </template>
 
-<script lang="ts">
-import {Options, Vue} from "vue-class-component";
-import {Pigeon} from "../Types";
-import Popup from "@/components/Popup.vue";
+<script setup lang="ts">
+import {Post} from "../Types";
+import {computed, ref} from "vue";
+import Likes from "@/components/Likes.vue";
+import ContextMenu from "@/components/ContextMenu.vue";
+import {modApi} from "@/store/apis";
+import {useToast} from "vue-toastification";
 
-@Options({
-  name: "pigeon-shower",
-  props: {
-    pigeon: Object,
-    pigeonId: Number
-  },
-  components: {
-    Popup
-  }
-})
-export default class PigeonShower extends Vue{
-  pigeon: Pigeon = {
-    id: 0,
-    url: ''
-  }
-  error = true
-  pigeonId ?:number
-  mounted(){
-    window.addEventListener('keydown', ev => {
-      if(ev.key == 'Enter') {
-        this.swapPigeon()
-      }
-    })
-    if(this.pigeonId != undefined){
-      this.swapPigeonToId(this.pigeonId)
-    }else{
-      this.swapPigeon()
-    }
-  }
-  api = "https://cutepigeons.palomox.ga/api/v1/"
-  async swapPigeon(){
-    const data = await fetch(this.api+'public/pigeons', {
-      mode: "cors",
-      method: "GET"
-    })
-    if(!data.ok){
-      this.error = true
-      return
-    }
-    this.error = false
-    const responseBody = await data.json()
-    const pigeonsLength = responseBody.pigeons.length
+const props = defineProps({
+  post: {type: Post, required: true},
+  editable: {type: Boolean, default: false},
+  type: {type: String, required: true}
+});
 
-    const pigeonId = this.randomIntFromInterval(1, pigeonsLength)
+const toast = useToast();
 
-    const chosenPigeon = responseBody.pigeons[pigeonId]
+const emit = defineEmits<{
+  (e: "delete", id: number) : void,
+  (e: "doLike", id: number) : void
+}>();
 
-    this.$emit('change-pigeon', chosenPigeon)
-    await this.$router.push('/?id='+chosenPigeon.id)
-  }
-  async swapPigeonToId(id:number){
-    const data = await fetch(this.api+'public/pigeon/'+id, {
-      mode: "cors",
-      method: "GET"
-    })
-    if(!data.ok){
-      this.error = true;
-      return
-    }
-    this.error = false;
-    const responseBody = await data.json()
+const getAuthor = computed(() => {
+  return "uploaded by " + props.post.author;
+});
 
-    const chosenPigeon = responseBody
+let showDelete = ref(false);
 
-    this.$emit('change-pigeon', chosenPigeon)
-  }
-  /**
-   * Generates random number between min and max, both included
-   * @param min Minimum number to generate between (included)
-   * @param max Maximum number to generate between (included)
-   */
-  randomIntFromInterval(min:number, max:number) : number {
-    return Math.floor(Math.random() * (max - min + 1) + min)
-  }
+function deletePost(){
+  showDelete.value = false;
+  emit("delete", props.post.id);
 }
+
+function doLike(){
+  emit("doLike", props.post.id);
+}
+
+function handleContextMenu(event: MouseEvent) {
+  event.button === 2 ? showDelete.value = !showDelete.value : showDelete.value = false;
+}
+
+function modAction(allowed : boolean){
+  showDelete.value = false;
+  modApi.doModAction({allow: allowed}, props.post.id).then((response) => {
+    switch(response.data.allowed){
+      case true:
+        toast.success(response.data.message);
+        break;
+      case false:
+        toast.error(response.data.message);
+        break;
+    }
+  });
+}
+
+const getContextMenu = computed(() => {
+  return props.type.includes("mod") ? "modactions" : "delete";
+});
 </script>
 
 <style scoped>

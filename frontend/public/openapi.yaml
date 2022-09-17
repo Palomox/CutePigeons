@@ -1,0 +1,488 @@
+openapi: 3.0.3
+info:
+  title: CutePigeons
+  version: 1.0.0
+  description: This is the api for CutePigeons
+  license:
+    name: GPL v3
+    url: https://www.gnu.org/licenses/gpl-3.0.html
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://cutepigeons.palomox.ga/api/v2
+    variables: {}
+    description: 'Production API version 2 '
+  - url: http://localhost:5555/api/v2
+    variables: {}
+    description: Local api V2
+tags:
+  - name: Posts
+    description: Everything related to posts
+  - name: User
+    description: Everything related to the logged in user
+  - name: Mod
+    description: All apis for Moderators
+paths:
+  /posts:
+    summary: Posts
+    description: Interact with all the posts
+    get:
+      summary: Get all the posts
+      description: Gets all the posts uploaded to CutePigeons
+      operationId: getPosts
+      parameters:
+        - in: query
+          required: false
+          name: editable
+          schema:
+            type: boolean
+            example: true
+          description: >-
+            if the returned posts should only be editable ones (defaults to
+            false)
+
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostArray'
+              examples:
+                All posts:
+                  value: |-
+                    {
+                        "posts": [
+                            {
+                                "id": 1,
+                                "title": "Example",
+                                "author": "Palomox",
+                                "url": "https://cutepigeons.palomox.ga/images/1.png",
+                                "likes": 7
+                            }
+                        ]
+                    }
+        '500':
+          description: Server error
+      tags:
+        - Posts
+    post:
+      requestBody:
+        $ref: '#/components/requestBodies/PostData'
+      summary: Add a new post
+      description: Adds a new post
+      operationId: addPost
+      security:
+        - api_key: []
+        - cookie_auth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Added post user:
+                  value: |-
+                    {
+                        "status": "Added post to moderation queue",
+                        "id": 14
+                    }
+                Added post admin:
+                  value: |-
+                    {
+                        "status": "Added the post",
+                        "id": 14
+                    }
+        '403':
+          description: Unauthorized
+        '500':
+          description: Server error
+      tags:
+        - Posts
+  /posts/{id}/like:
+    summary: Interacts with a post by ID
+    description: Interact with a post by id
+    parameters:
+      - in: path
+        required: true
+        name: id
+        schema:
+          type: integer
+          example: 5
+        description: The id of the post
+    post:
+      summary: Likes post
+      description: Adds or removes a like to the wanted post
+      operationId: likePost
+      security:
+        - api_key: []
+        - cookie_auth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Added Like successfully:
+                  value: |-
+                    {
+                        "status": "Added like"
+                    }
+                Removed like:
+                  value: |-
+                    {
+                        "status": "Removed like"
+                    }
+        '403':
+          description: Unauthorized
+        '500':
+          description: Error
+      tags:
+        - Posts
+  /posts/{id}:
+    summary: Interacts with a post by ID
+    description: Interact with a post by id
+    parameters:
+      - in: path
+        required: true
+        name: id
+        schema:
+          type: integer
+          example: 1
+        description: The id of the post
+    get:
+      summary: Gets post by id
+      description: Gets the post of the specified ID
+      operationId: getPostById
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+              examples:
+                Got post:
+                  value: |-
+                    {
+                        "id": 1,
+                        "title": "Example",
+                        "author": "Palomox",
+                        "url": "https://cutepigeons.palomox.ga/images/1.png",
+                        "likes": 7
+                    }
+        '404':
+          description: Post not found
+        '500':
+          description: Server error
+      tags:
+        - Posts
+    delete:
+      summary: Deletes post
+      description: Deletes post
+      operationId: deletePost
+      security:
+        - api_key: []
+        - cookie_auth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Deleted Successfully:
+                  value: |-
+                    {
+                        "status": "Deleted pigeon",
+                        "id": 1
+                    }
+        '403':
+          description: Not allowed
+        '404':
+          description: Post not found
+        '500':
+          description: Server error
+      tags:
+        - Posts
+  /mod/queue:
+    summary: The queue for moderators
+    description: Interacts with the queue for moderators
+    get:
+      summary: Gets posts pending from moderating
+      description: Returns posts that aren't public
+      security:
+        - api_key: []
+        - cookie_auth: []
+      operationId: getModQueue
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostArray'
+              examples:
+                Successfully got modqueue:
+                  value: |-
+                    {
+                        "posts": [
+                            {
+                                "id": 1,
+                                "title": "Example",
+                                "author": "Palomox",
+                                "url": "https://cutepigeons.palomox.ga/images/1.png",
+                                "likes": 0
+                            }
+                        ]
+                    }
+        '403':
+          description: Not allowed
+        '500':
+          description: Server error
+      tags:
+        - Mod
+  /mod/queue/{id}:
+    summary: Interact with a post in the modqueue
+    description: Interact with a post of the modqueue by id
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+    post:
+      summary: Allows or denies a submission
+      description: Allows or denies a submission
+      security:
+        - api_key: []
+        - cookie_auth: []
+      operationId: doModAction
+      requestBody:
+        $ref: '#/components/requestBodies/ModAction'
+      responses:
+        '200':
+          description: Successfully done action
+          content:
+            application/json:
+              examples:
+                Allowed pigeon:
+                  value: |-
+                    {
+                        "message": "Pigeon allowed"
+                    }
+                Pigeon denied:
+                  value: |-
+                    {
+                        "message": "Pigeon deleted"
+                    }
+        '403':
+          description: Not allowed
+        '404':
+          description: Post not found
+        '500':
+          description: Server error
+      tags:
+        - Mod
+  /user:
+    summary: Interact with user
+    description: Interact with user
+    get:
+      summary: Get user details
+      description: Get user details
+      operationId: getUserDetails
+      security:
+        - cookie_auth: []
+        - api_key: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Got details:
+                  value: |-
+                    {
+                        "displayName": "Palomox"
+                    }
+        '403':
+          description: Unauthorized
+        '500':
+          description: Server error
+      tags:
+        - User
+    put:
+      summary: Change user information
+      description: Changes user information
+      operationId: editUser
+      requestBody:
+        $ref: '#/components/requestBodies/UserInfo'
+      security:
+        - cookie_auth: []
+        - api_key: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Updated details:
+                  value: |-
+                    {
+                        "displayName": "Palomox"
+                    }
+        '403':
+          description: Unauthorized
+        '500':
+          description: Server error
+      tags:
+        - User
+  /user/token:
+    summary: Interact with creating tokens
+    description: Initializes token flows
+    get:
+      summary: Starts login flow
+      description: Starts login flow
+      parameters:
+        - in: query
+          name: token
+          description: Token to refresh (if wanted)
+          required: false
+          schema:
+            properties:
+              token:
+                type: string
+      operationId: getToken
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Created flow:
+                  value: |-
+                    {
+                        "flow": "14d31a92-0b26-4d5e-bdd1-af5c65fa6c1d"
+                    }
+        '500':
+          description: Server error
+      tags:
+        - User
+    post:
+      summary: Gets the token from the flow
+      description: Gets token from flow
+      operationId: getTokenFromFlow
+      requestBody:
+        $ref: '#/components/requestBodies/Login'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Gave token:
+                  value: |-
+                    {
+                        "token": "<redacted>"
+                    }
+        '500':
+          description: Server error
+      tags:
+        - User
+components:
+  schemas:
+    UserInfo:
+      type: object
+      properties:
+        displayName:
+          type: string
+          example: Palomox
+    PostArray:
+      type: object
+      properties:
+        posts:
+          type: array
+          format: object
+          items:
+            $ref: '#/components/schemas/Post'
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 14
+        title:
+          type: string
+          example: Pigeon
+        author:
+          type: string
+          example: Palomox
+        url:
+          type: string
+          format: url
+          example: https://cutepigeons.palomox.ga/images/1.png
+        likes:
+          type: integer
+          example: 5
+    Login:
+      type: object
+      properties:
+        flow:
+          type: string
+        id:
+          type: string
+        password:
+          type: string
+    ModAction:
+      type: object
+      properties:
+        allow: 
+          type: boolean
+    PostData:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Pigeon
+        image:
+          type: string
+          format: binary
+  requestBodies:
+    Login:
+      required: true
+      description: Body specifying the login details
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Login'
+    ModAction:
+      required: true
+      description: Body specifying whether a post is allowed or not
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ModAction'
+    UserInfo:
+      required: true
+      description: Body specifying the details of an user
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserInfo'
+    PostData:
+      required: true
+      description: Body specifying the formData for a new post
+      content:
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/PostData'
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
+    cookie_auth:
+      type: apiKey
+      in: cookie
+      name: ory_session_romanticsatoshikojdtfzsl2
